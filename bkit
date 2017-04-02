@@ -1,0 +1,156 @@
+#!/bin/bash
+# Code is poetry
+author=Psychic-74
+appfolder=/Applications
+scriptVersion=1.0
+selectedway=nothing
+selectedos=nothing
+appPath=nothing
+
+function requestRoot(){
+	echo -e "Requesting root access."
+	sudo something &>/dev/null
+}
+
+function printHeader(){
+	echo Bkit™ ver $scriptVersion by $author is running on $(sw_vers -productName) $(sw_vers -productVersion) 
+}
+
+function showVersion(){
+	echo -e $scriptVersion
+}
+
+function askForWay(){
+	read -p "Please press 1 for new way, press 2 for old way. " selectedway
+}
+
+function askForOs(){
+	read -p "Please press 1 for Sierra, 2 for El Capitan, 3 for Yosemite " appPath
+	case $appPath in
+		[1] )
+			appPath="/Applications/Install macOS Sierra.app"
+			;;
+		[2] )
+			appPath="/Applications/Install OS X El Capitan.app"
+			;;
+		[3] )
+			appPath="/Applications/Install OS X Yosemite.app"
+			;;
+		* )
+			echo -e "Invalid selection."
+			askForOs
+			;;
+	esac				
+}
+
+function checkForApp(){
+	if [[ -e $appPath ]];
+		then
+		echo -e "OS Installer found. Proceeding."
+	else
+		echo -e "Installer for selected option not found. Have you downloaded yet?"
+		exit 1
+	fi
+}
+
+function formatUSB(){
+	echo -e "Please note that all the data on your USB will be irreversibly deleted." && sleep 0.5
+	read -p "Type (Yes) or Y if you agree " USBPrompt
+	case $USBPrompt in
+		[yY][eE][sS]|[yY] )
+			read -p "Please enter DISK IDENTIFIER for your USB " diskId
+			echo -e "Starting ERASE process." && sleep 0.5
+			diskutil partitionDisk /dev/$diskId 1 GPT HFS+J "install_osx" R &>/dev/null
+			;;
+		[nN][oO]|[nN] )
+			echo -e "Okay. Exiting."
+			exit 1
+			;;
+		* )
+			echo -e "Invalid selection."
+			formatUSB
+			;;
+	esac		
+}
+
+function installClover(){
+	read -p "Please install clover and then type continue(c) " cloverAns
+	case $cloverAns in
+		[cC][oO][nN][tT][iI][nN][uU][eE]|[cC] )
+			echo -e "Checking if the clover is installed or not."
+			if [ -e /Volumes/EFI/EFI/CLOVER/config.plist ];
+				then
+				echo -e "Clover is installed. Proceeding."
+			else
+				echo -e "Clover not installed."
+				installClover
+			fi
+			;;
+		* )
+			echo -e "Invalid input. Try again."
+			installClover
+			;;	
+	esac
+}
+
+function makeUsbNewWay(){
+	echo -e "Creating OS X installer using createinstallmedia method (Real Mac)."
+	sudo "$appPath"/Contents/Resources/createinstallmedia --volume  /Volumes/install_osx --applicationpath "$appPath" --nointeraction &>/dev/null
+	echo -e "Installer created. Renaming USB."
+	diskutil rename /dev/"$diskId"s1 "install_osx" &>/dev/null
+}
+
+function makeUsbOldWay(){
+	echo -e "Creating OS X installer using Base Binaries Clone method."
+	echo -e "Creating temporary directory."
+	tdir=/tmp/install_esd
+	if [ -e $tdir ];
+		then
+		rm -rf $tdir
+		mkdir -p $tdir
+	else
+		mkdir -p $tdir
+	fi
+	echo -e "Attaching Disk Image to $tdir"
+	hdiutil attach "$appPath"/Contents/SharedSupport/InstallESD.dmg -readonly -mountpoint $tdir -nobrowse &>/dev/null
+	echo -e "Restoring Installer image to USB."
+	sudo asr restore -source $tdir/BaseSystem.dmg -target /Volumes/install_osx -erase -format HFS+ -noprompt &>/dev/null
+	echo -e "Renaming USB to install_osx."
+	diskutil rename "OS X Base System" install_osx &>/dev/null
+	echo -e "Removing packages symlink."
+	rm /Volumes/install_osx/System/Installation/Packages &>/dev/null
+	echo -e "Restorng Packages."
+	cp -a $tdir/Packages /Volumes/install_osx/System/Installation &>/dev/null
+	echo -e "Restoring BaseSystem."
+	cp -a $tdir/BaseSystem.dmg $tdir/BaseSystem.chunklist /Volumes/install_osx &>/dev/null
+	echo -e "Detaching Disk Image from $tdir"
+	hdiutil detach $tdir &>/dev/null
+	echo -e "Removing temporary directory."
+	rm -rf $tdir &>/dev/null
+}
+
+function letsCelebrate(){
+	echo -e "If everything went good, you're good to go." && sleep 0.5
+	echo -e "In case OS X Installer says the installer is corrupted," && sleep 0.5
+	echo -e "Create USB Using the old way" && sleep 0.5
+	echo -e "All the best!" && sleep 0.5
+	echo -e "Sleeping now." && sleep 0.5
+	exit 0
+}
+
+# Enough with functions declarations. Let's hit it now.
+clear
+printHeader
+requestRoot
+askForWay
+askForOs
+checkForApp
+formatUSB
+installClover
+if [[ $selectedway = "1" ]];
+	then
+	makeUsbNewWay
+else
+	makeUsbOldWay
+fi
+letsCelebrate
