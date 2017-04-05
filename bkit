@@ -81,6 +81,15 @@ function installClover(){
 			if [ -e /Volumes/EFI/EFI/CLOVER/config.plist ];
 				then
 				echo -e "Clover is installed. Proceeding."
+			elif [ -e /Volumes/ESP/EFI/CLOVER/config.plist ];
+				then
+				echo -e "Clover is installed. Proceeding."
+			elif [ -e /Volumes/EFI\ 1/EFI/CLOVER/config.plist ];
+				then
+				echo -e "Clover is installed. Proceeding."
+			elif [ -e /Volumes/EFI\ 01/EFI/CLOVER/config.plist ];
+				then
+				echo -e "Clover is installed. Proceeding."
 			else
 				echo -e "Clover not installed."
 				installClover
@@ -91,6 +100,10 @@ function installClover(){
 			installClover
 			;;	
 	esac
+}
+
+function skipClover(){
+	echo -e "Skipping CLOVER check as requested."
 }
 
 function makeUsbNewWay(){
@@ -146,7 +159,12 @@ askForWay
 askForOs
 checkForApp
 formatUSB
-installClover
+if [[ $1 = "-nc" ]];
+	then
+	skipClover
+else
+	installClover
+fi
 if [[ $selectedway = "1" ]];
 	then
 	makeUsbNewWay
