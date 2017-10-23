@@ -2,7 +2,7 @@
 # Code is poetry
 author=Psychic-74
 appfolder=/Applications
-scriptVersion=1.0
+scriptVersion=2.0
 selectedway=nothing
 selectedos=nothing
 appPath=nothing
@@ -25,15 +25,21 @@ function askForWay(){
 }
 
 function askForOs(){
-	read -p "Please press 1 for Sierra, 2 for El Capitan, 3 for Yosemite " appPath
+	read -p "Please press 1 for High Sierra, 2 for Sierra, 3 for El Capitan, 4 for Yosemite " appPath
 	case $appPath in
 		[1] )
+			appPath="/Applications/Install macOS High Sierra.app"
+			selectedway=1
+			echo -e "Please not that creating USB using old way is not recommended on macOS 10.13+" && sleep 0.5
+			echo -e "Hence installer will be created using createinstallmedia method" && sleep 0.5
+			;;
+		[2] )
 			appPath="/Applications/Install macOS Sierra.app"
 			;;
 		[2] )
 			appPath="/Applications/Install OS X El Capitan.app"
 			;;
-		[3] )
+		[4] )
 			appPath="/Applications/Install OS X Yosemite.app"
 			;;
 		* )
