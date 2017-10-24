@@ -25,7 +25,7 @@ function askForWay(){
 }
 
 function askForOs(){
-	read -p "Please press 1 for High Sierra, 2 for Sierra, 3 for El Capitan, 4 for Yosemite " appPath
+	read -p "Please press 1 for 10.13, 2 for 10.12, 3 for 10.11, 4 for 10.10, 5 for 10.9 " appPath
 	case $appPath in
 		[1] )
 			appPath="/Applications/Install macOS High Sierra.app"
@@ -41,6 +41,9 @@ function askForOs(){
 			;;
 		[4] )
 			appPath="/Applications/Install OS X Yosemite.app"
+			;;
+		[5] )
+			appPath="/Applications/Install OS X Mavericks.app"	
 			;;
 		* )
 			echo -e "Invalid selection."
