@@ -68,6 +68,12 @@ function formatUSB(){
 	case $USBPrompt in
 		[yY][eE][sS]|[yY] )
 			read -p "Please enter DISK IDENTIFIER for your USB " diskId
+			if [[ "$(diskutil info /dev/$diskId | grep "Removable" | awk '{print $3}')" = "Removable" ]]; then
+				echo "/dev/$disId verified as a removable drive."
+			else
+				echo "/dev/$diskId is not a removable drive."
+				exit
+			fi
 			echo -e "Starting ERASE process." && sleep 0.5
 			diskutil partitionDisk /dev/$diskId 1 GPT HFS+J "install_osx" R &>/dev/null
 			;;
