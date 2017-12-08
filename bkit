@@ -1,6 +1,6 @@
 #!/bin/bash
 # Code is poetry
-author=Psychic-74
+author=black.dragon74
 appfolder=/Applications
 scriptVersion=2.0
 selectedway=nothing
