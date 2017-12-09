@@ -2,7 +2,7 @@
 # Code is poetry
 author=black.dragon74
 appfolder=/Applications
-scriptVersion=2.0
+scriptVersion=2.1
 selectedway=nothing
 selectedos=nothing
 appPath=nothing
@@ -69,7 +69,7 @@ function formatUSB(){
 		[yY][eE][sS]|[yY] )
 			read -p "Please enter DISK IDENTIFIER for your USB " diskId
 			if [[ "$(diskutil info /dev/$diskId | grep "Removable" | awk '{print $3}')" = "Removable" ]]; then
-				echo "/dev/$disId verified as a removable drive."
+				echo "/dev/$diskId verified as a removable drive."
 			else
 				echo "/dev/$diskId is not a removable drive."
 				exit
