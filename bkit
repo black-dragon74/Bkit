@@ -2,7 +2,7 @@
 # Code is poetry
 author=black.dragon74
 appfolder=/Applications
-scriptVersion=2.1
+scriptVersion=2.2
 selectedway=nothing
 selectedos=nothing
 appPath=nothing
@@ -22,6 +22,15 @@ function showVersion(){
 
 function askForWay(){
 	read -p "Please press 1 for new way, press 2 for old way. " selectedway
+	case $selectedway in
+		1|2 )
+			:
+			;;
+		* )
+			echo "Inavlid selection."
+			askForWay
+			;;	
+	esac
 }
 
 function askForOs(){
