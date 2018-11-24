@@ -2,7 +2,7 @@
 # Code is poetry
 author=black.dragon74
 appfolder=/Applications
-scriptVersion=2.2
+scriptVersion=2.3
 selectedway=nothing
 selectedos=nothing
 appPath=nothing
@@ -34,8 +34,14 @@ function askForWay(){
 }
 
 function askForOs(){
-	read -p "Please press 1 for 10.13, 2 for 10.12, 3 for 10.11, 4 for 10.10, 5 for 10.9 " appPath
+	read -p "Please press 0 for 10.14, 1 for 10.13, 2 for 10.12, 3 for 10.11, 4 for 10.10, 5 for 10.9 " appPath
 	case $appPath in
+		[0] )
+			appPath="/Applications/Install macOS Mojave.app"
+			selectedway=1
+			echo -e "Please not that creating USB using old way is not recommended on macOS 10.13+" && sleep 0.5
+			echo -e "Hence installer will be created using createinstallmedia method" && sleep 0.5
+			;;
 		[1] )
 			appPath="/Applications/Install macOS High Sierra.app"
 			selectedway=1
